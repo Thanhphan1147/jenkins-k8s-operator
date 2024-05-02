@@ -32,7 +32,7 @@ pipeline {
 
         stage('Unit') {
             agent { 
-              kuberentes {
+              kubernetes {
                 yaml pod_template
               }   
             }
