@@ -1,48 +1,24 @@
-pod_template = '''apiVersion: v1
-kind: Pod
-spec:
-  containers:
-  - name: python-tox
-    image: python-tox:1.0
-    command:
-    - sleep
-    args:
-    - 99d
-'''
-
-pipeline {
-    agent none
-
-    stages {
-        stage('Lint') {
-            agent { 
-              kubernetes {
-                yaml pod_template
-              } 
-            }
-
-            steps {
-                sh'''#!/bin/bash
-                    echo "$(hostname) $(date) : Running in $(pwd) as $(whoami)"
-                    python3 -m tox -e lint
-                '''
-
-            }
-        }
-
-        stage('Unit') {
-            agent { 
-              kubernetes {
-                yaml pod_template
-              }   
-            }
-
-            steps {
-                sh'''#!/bin/bash
-                    echo "$(hostname) $(date) : Running in $(pwd) as $(whoami)"
-                    python3 -m tox -e unit
-                '''
-            }
-        }
+podTemplate(yaml: '''
+    apiVersion: v1
+    kind: Pod
+    metadata:
+    labels:
+        some-label: some-label-value
+    spec:
+    containers:
+    - name: python-tox
+      image: python-tox
+      command:
+      - sleep
+      args:
+      - 99d
+      tty: true
+''') {
+node(POD_LABEL) {
+    stage('Lint') {
+      sh '''#!/bin/bash
+          python3 -m tox lint
+      '''
     }
+  }
 }
