@@ -2,6 +2,9 @@ pod_template = '''apiVersion: v1
 kind: Pod
 spec:
   containers:
+  - name: jnlp
+    image: 'jenkins/inbound-agent'
+    args: ['\$(JENKINS_SECRET)', '\$(JENKINS_NAME)']
   - name: python-tox
     image: python-tox:1.0
     command:
@@ -18,6 +21,7 @@ pipeline {
             agent { 
               kubernetes {
                 yaml pod_template
+                defaultContainer 'python-tox'
               } 
             }
 
@@ -34,6 +38,7 @@ pipeline {
             agent { 
               kubernetes {
                 yaml pod_template
+                defaultContainer 'python-tox'
               }   
             }
 
