@@ -24,7 +24,9 @@ pipeline {
             steps {
                 sh'''#!/bin/bash
                     echo "$(hostname) $(date) : Running in $(pwd) as $(whoami)"
-                    python3 -m tox -e lint
+                    which python
+                    which python3
+                    python -m tox -e lint
                 '''
 
             }
