@@ -12,40 +12,41 @@ spec:
 
 pipeline {
     agent none
-
     stages {
-        parallel {
-          stage('Lint') {
-              agent { 
-                kubernetes {
-                  yaml pod_template
-                  defaultContainer 'python-tox'
-                } 
-              }
-  
-              steps {
-                  sh'''#!/bin/bash
-                      echo "$(hostname) $(date) : Running in $(pwd) as $(whoami)"
-                      python3 -m tox -e lint
-                  '''
-  
-              }
-          }
-  
-          stage('Unit') {
-              agent { 
-                kubernetes {
-                  yaml pod_template
-                  defaultContainer 'python-tox'
-                }   
-              }
-  
-              steps {
-                  sh'''#!/bin/bash
-                      echo "$(hostname) $(date) : Running in $(pwd) as $(whoami)"
-                      python3 -m tox -e unit
-                  '''
-              }
+        stage('Lint and unit test') {
+          parallel {
+            stage('Lint') {
+                agent { 
+                  kubernetes {
+                    yaml pod_template
+                    defaultContainer 'python-tox'
+                  } 
+                }
+    
+                steps {
+                    sh'''#!/bin/bash
+                        echo "$(hostname) $(date) : Running in $(pwd) as $(whoami)"
+                        python3 -m tox -e lint
+                    '''
+    
+                }
+            }
+    
+            stage('Unit') {
+                agent { 
+                  kubernetes {
+                    yaml pod_template
+                    defaultContainer 'python-tox'
+                  }   
+                }
+    
+                steps {
+                    sh'''#!/bin/bash
+                        echo "$(hostname) $(date) : Running in $(pwd) as $(whoami)"
+                        python3 -m tox -e unit
+                    '''
+                }
+            }
           }
         }
     }
