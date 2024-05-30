@@ -3,7 +3,7 @@ kind: Pod
 spec:
   containers:
   - name: python-tox
-    image: python-tox:1.0
+    image: ghcr.io/thanhphan1147/python-tox:1.0
     command:
     - sleep
     args:
