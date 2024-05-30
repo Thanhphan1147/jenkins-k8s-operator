@@ -14,37 +14,38 @@ pipeline {
     agent none
 
     stages {
-        stage('Lint') {
-            agent { 
-              kubernetes {
-                yaml pod_template
-              } 
-            }
-
-            steps {
-                sh'''#!/bin/bash
-                    echo "$(hostname) $(date) : Running in $(pwd) as $(whoami)"
-                    which python
-                    which python3
-                    python -m tox -e lint
-                '''
-
-            }
-        }
-
-        stage('Unit') {
-            agent { 
-              kubernetes {
-                yaml pod_template
-              }   
-            }
-
-            steps {
-                sh'''#!/bin/bash
-                    echo "$(hostname) $(date) : Running in $(pwd) as $(whoami)"
-                    python3 -m tox -e unit
-                '''
-            }
+        parallel {
+          stage('Lint') {
+              agent { 
+                kubernetes {
+                  yaml pod_template
+                  defaultContainer 'python-tox'
+                } 
+              }
+  
+              steps {
+                  sh'''#!/bin/bash
+                      echo "$(hostname) $(date) : Running in $(pwd) as $(whoami)"
+                      python3 -m tox -e lint
+                  '''
+  
+              }
+          }
+  
+          stage('Unit') {
+              agent { 
+                kubernetes {
+                  yaml pod_template
+                }   
+              }
+  
+              steps {
+                  sh'''#!/bin/bash
+                      echo "$(hostname) $(date) : Running in $(pwd) as $(whoami)"
+                      python3 -m tox -e unit
+                  '''
+              }
+          }
         }
     }
 }
