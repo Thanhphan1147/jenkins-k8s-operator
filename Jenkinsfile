@@ -36,6 +36,7 @@ pipeline {
               agent { 
                 kubernetes {
                   yaml pod_template
+                  defaultContainer 'python-tox'
                 }   
               }
   
